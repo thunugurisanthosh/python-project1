@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Personal Finance Tracker</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:24px;max-width:980px}
+    h1{margin-bottom:8px}
+    .cards{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+    .card{padding:12px 16px;border:1px solid #e5e7eb;border-radius:12px;min-width:180px}
+    form{margin:16px 0;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end}
+    form input, form select, form button{padding:8px;border:1px solid #e5e7eb;border-radius:8px}
+    .flash{background:#f1f5f9;padding:10px;border-radius:8px;margin:8px 0}
+  </style>
+</head>
+<body>
+  <h1>📊 Personal Finance Tracker</h1>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for m in messages %}
+        <div class="flash">{{ m }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="cards">
+    <div class="card"><b>Total Income:</b> {{ income }}</div>
+    <div class="card"><b>Total Expense:</b> {{ expense }}</div>
+    <div class="card"><b>Balance:</b> {{ balance }}</div>
+  </div>
+
+  <h2>Add Transaction</h2>
+  <form method="POST" action="/add">
+    <input type="date" name="date" required>
+    <input type="text" name="category" placeholder="Category" required>
+    <input type="number" name="amount" step="0.01" placeholder="Amount" required>
+    <select name="type">
+      <option value="income">Income</option>
+      <option value="expense">Expense</option>
+    </select>
+    <input type="text" name="notes" placeholder="Notes (optional)">
+    <button type="submit">Add</button>
+  </form>
+
+  <h2>📂 Upload Transactions (CSV/Excel)</h2>
+  <form action="/upload" method="POST" enctype="multipart/form-data" style="grid-template-columns:1fr auto">
+    <input type="file" name="file" required>
+    <button type="submit">Upload</button>
+  </form>
+
+  <h2>📥 Export</h2>
+  <a href="/export"><button>Download CSV</button></a>
+
+  <h2>📈 Charts</h2>
+  {% if category_plot %} {{ category_plot | safe }} {% endif %}
+  {% if trend_plot %} {{ trend_plot | safe }} {% endif %}
+</body>
+</html>
